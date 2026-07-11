@@ -1,0 +1,18 @@
+{
+  "name": "zenflow-dashboard",
+  "version": "1.0.0",
+  "description": "Nilin Chitrakar's Personal Portfolio Website",
+  "main": "app.js",
+  "scripts": {
+    "build": "tailwindcss -i ./style.css -o ./dist/style.css --minify",
+    "dev": "tailwindcss -i ./style.css -o ./dist/style.css --watch"
+  },
+  "keywords": [],
+  "author": "Nilin Chitrakar",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}

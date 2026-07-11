@@ -1,0 +1,900 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   ZenFlow Stylesheet - Modern Glassmorphism & High-End Styling
+   ========================================================================== */
+
+/* Theme Variables */
+:root {
+  /* Colors */
+  --bg-gradient: radial-gradient(circle at 50% 50%, #0b0f19 0%, #05070c 100%);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-glow: rgba(139, 92, 246, 0.3);
+  --secondary: #ec4899;
+  --accent: #06b6d4;
+  --accent-glow: rgba(6, 182, 212, 0.25);
+  
+  /* Glassmorphism properties */
+  --glass-bg: rgba(13, 18, 30, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.07);
+  --glass-hover-bg: rgba(17, 24, 39, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --card-border-radius: 20px;
+  
+  /* Typography */
+  --font-family: 'Plus Jakarta Sans', 'Outfit', system-ui, -apple-system, sans-serif;
+  
+  /* Transitions */
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.2s ease;
+}
+
+/* Light Theme Variables */
+body.light-theme {
+  --bg-gradient: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #e2e8f0 100%);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  --primary: #6d28d9;
+  --primary-hover: #5b21b6;
+  --primary-glow: rgba(109, 40, 217, 0.2);
+  --secondary: #db2777;
+  
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-hover-bg: rgba(255, 255, 255, 0.65);
+  --glass-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.15);
+}
+
+/* Core Settings */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background var(--transition-smooth);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+body.light-theme ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+body.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   Ambient Animated Orbs
+   ========================================================================== */
+.ambient-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  mix-blend-mode: screen;
+  transition: var(--transition-smooth);
+}
+
+body.light-theme .orb {
+  mix-blend-mode: multiply;
+  opacity: 0.18;
+  filter: blur(100px);
+}
+
+.orb-1 {
+  width: 35vw;
+  height: 35vw;
+  background: radial-gradient(circle, var(--primary) 0%, rgba(139, 92, 246, 0) 70%);
+  top: -10%;
+  left: 10%;
+  animation: float-1 25s infinite alternate ease-in-out;
+}
+
+.orb-2 {
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, var(--secondary) 0%, rgba(236, 72, 153, 0) 70%);
+  bottom: -15%;
+  right: 5%;
+  animation: float-2 30s infinite alternate ease-in-out;
+}
+
+.orb-3 {
+  width: 30vw;
+  height: 30vw;
+  background: radial-gradient(circle, var(--accent) 0%, rgba(6, 182, 212, 0) 70%);
+  top: 30%;
+  right: 25%;
+  animation: float-3 20s infinite alternate ease-in-out;
+}
+
+@keyframes float-1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(8%, 12%) scale(1.1); }
+}
+
+@keyframes float-2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-10%, -8%) scale(1.05); }
+}
+
+@keyframes float-3 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(12%, -15%) scale(1.15); }
+}
+
+/* ==========================================================================
+   Dashboard Wrapper and Layout
+   ========================================================================== */
+.dashboard-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.logo-icon {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-datetime {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-datetime .separator {
+  color: var(--text-muted);
+}
+
+/* Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  flex: 1;
+}
+
+.grid-span-full {
+  grid-column: span 12;
+}
+
+/* ==========================================================================
+   Component Base (Glass Cards)
+   ========================================================================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--glass-shadow);
+  transition: var(--transition-smooth);
+}
+
+.card {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card:hover {
+  background: var(--glass-hover-bg);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+body.light-theme .card:hover {
+  border-color: rgba(15, 23, 42, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title i {
+  color: var(--primary);
+  width: 20px;
+  height: 20px;
+}
+
+.card-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   1. Greeting Card
+   ========================================================================== */
+.greeting-card {
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.greeting-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.greeting-content p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   2. Focus Timer Widget
+   ========================================================================== */
+.timer-card {
+  grid-column: span 5;
+  align-items: center;
+  text-align: center;
+}
+
+.timer-modes {
+  display: flex;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+body.light-theme .timer-modes {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.mode-btn.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px var(--primary-glow);
+}
+
+.timer-display-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.progress-ring {
+  position: absolute;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bar {
+  stroke-dasharray: 603.19;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.time-display {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-display .colon {
+  font-size: 2.5rem;
+  color: var(--primary);
+  margin-bottom: 6px;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.timer-controls {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-fast);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.light-theme .btn-secondary {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+body.light-theme .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   3. Ambient Sound Widget
+   ========================================================================== */
+.sound-card {
+  grid-column: span 7;
+}
+
+.sound-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 5px;
+}
+
+.sound-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: var(--transition-fast);
+}
+
+.sound-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+body.light-theme .sound-row {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.03);
+}
+body.light-theme .sound-row:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.sound-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.sound-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.sound-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+.sound-toggle-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+body.light-theme .sound-toggle-btn {
+  background: rgba(0, 0, 0, 0.03);
+}
+body.light-theme .sound-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+body.light-theme .sound-toggle-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.sound-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.sound-slider-container {
+  display: flex;
+  align-items: center;
+  width: 140px;
+}
+
+.sound-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  outline: none;
+  transition: background 0.3s;
+}
+
+body.light-theme .sound-slider {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sound-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s;
+}
+
+.sound-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.sound-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.status-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ==========================================================================
+   4. Task Manager Widget (Todo)
+   ========================================================================== */
+.todo-card {
+  grid-column: span 7;
+}
+
+.todo-counter {
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+body.light-theme .todo-counter {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.todo-input-group {
+  display: flex;
+  gap: 12px;
+}
+
+.todo-input-group input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: 0.92rem;
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.todo-input-group input:focus {
+  border-color: var(--primary);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+body.light-theme .todo-input-group input {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--text-primary);
+}
+body.light-theme .todo-input-group input:focus {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.todo-add-btn {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  width: 48px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.todo-add-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.todo-list-container {
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 12px 16px;
+  border-radius: 12px;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: var(--transition-fast);
+}
+
+.todo-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body.light-theme .todo-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.03);
+}
+body.light-theme .todo-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.todo-item.completed {
+  opacity: 0.65;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.todo-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.todo-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 2px solid var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.todo-checkbox:hover {
+  border-color: var(--primary);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.todo-checkbox.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.todo-checkbox i {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3px;
+}
+
+.todo-text {
+  font-size: 0.92rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.todo-delete-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.todo-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ==========================================================================
+   5. Dynamic Notes & Quotes Card
+   ========================================================================== */
+.notes-card {
+  grid-column: span 5;
+}
+
+#quick-notes {
+  width: 100%;
+  height: 160px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 14px;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+#quick-notes:focus {
+  border-color: var(--primary);
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+body.light-theme #quick-notes {
+  background: rgba(255, 255, 255, 0.5);
+}
+body.light-theme #quick-notes:focus {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* ==========================================================================
+   Header and General Buttons
+   ========================================================================== */
+.icon-btn-glass {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.icon-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+body.light-theme .icon-btn-glass {
+  background: rgba(0, 0, 0, 0.02);
+}
+body.light-theme .icon-btn-glass:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+/* ==========================================================================
+   Footer Styling
+   ========================================================================== */
+.dashboard-footer {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  margin-top: auto;
+}
+
+/* ==========================================================================
+   Responsive Styling (Media Queries)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .timer-card {
+    grid-column: span 6;
+  }
+  .sound-card {
+    grid-column: span 6;
+  }
+  .todo-card {
+    grid-column: span 7;
+  }
+  .notes-card {
+    grid-column: span 5;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    padding: 20px 16px;
+  }
+  
+  .dashboard-grid {
+    gap: 16px;
+  }
+  
+  .greeting-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+  }
+  
+  .greeting-actions {
+    align-self: flex-end;
+  }
+  
+  .timer-card, .sound-card, .todo-card, .notes-card {
+    grid-column: span 12;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+}

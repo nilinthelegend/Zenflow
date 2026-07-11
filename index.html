@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nilin Chitrakar // Premium Website Developer Portfolio</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Hi, I'm Nilin Chitrakar, a freelance website developer specializing in building premium, speed-optimized, responsive, and accessible web experiences for businesses.">
+  <meta name="keywords" content="Nilin Chitrakar, Web Developer, Freelance Website Development, Tailwind CSS, Frontend Developer, Responsive Web Design, Speed Optimization">
+  <meta name="author" content="Nilin Chitrakar">
+  
+  <!-- OpenGraph Metadata for Social Previews -->
+  <meta property="og:title" content="Nilin Chitrakar // Premium Website Developer Portfolio">
+  <meta property="og:description" content="Hi, I'm Nilin Chitrakar, a freelance website developer specializing in building premium, speed-optimized, responsive, and accessible web experiences for businesses.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nilinchitrakar.com">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons for clean UI -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Compiled Tailwind + Custom Stylesheet -->
+  <link rel="stylesheet" href="dist/style.css">
+</head>
+<body>
+  <!-- Ambient Floating Background Gradients -->
+  <div class="ambient-background">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="dashboard-wrapper">
+    <!-- Top Header Navigation -->
+    <header class="dashboard-header flex flex-col sm:flex-row gap-4 items-center justify-between py-4 px-6 border-b border-[rgba(255,255,255,0.03)]">
+      <div class="brand flex items-center gap-3">
+        <div class="brand-logo flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 shadow-md">
+          <i data-lucide="code" class="logo-icon text-white w-5 h-5"></i>
+        </div>
+        <span class="brand-name font-bold tracking-tight text-lg">Nilin Chitrakar</span>
+      </div>
+      
+      <!-- Portfolio Sections Anchors -->
+      <nav class="flex items-center gap-6 text-sm font-semibold" aria-label="Portfolio Navigation">
+        <a href="#about" class="text-slate-600 dark:text-slate-300 hover:text-violet-500 dark:hover:text-violet-400 transition-colors">About</a>
+        <a href="#services" class="text-slate-600 dark:text-slate-300 hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Services</a>
+        <a href="#projects" class="text-slate-600 dark:text-slate-300 hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Roadmap</a>
+        <a href="#contact" class="text-slate-600 dark:text-slate-300 hover:text-violet-500 dark:hover:text-violet-400 transition-colors">Contact</a>
+      </nav>
+
+      <div class="header-datetime flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <span id="header-date">Wednesday, July 8</span>
+        <span class="separator">•</span>
+        <span id="header-time">18:30</span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-grid">
+      
+      <!-- Greeting and Theme Section (Hero & About) -->
+      <section id="about" class="grid-span-full greeting-card glass flex flex-col md:flex-row gap-6 justify-between items-start md:items-center p-8">
+        <div class="greeting-content flex-1">
+          <h1 id="greeting-title" class="text-2xl md:text-3xl font-bold tracking-tight mb-2">Good evening, I'm Nilin Chitrakar</h1>
+          <p id="greeting-subtitle" class="text-sm md:text-base text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">I design and build premium, high-performance, and responsive websites that help businesses stand out and grow.</p>
+        </div>
+        <div class="greeting-actions flex-shrink-0 self-end md:self-center">
+          <button id="theme-toggle" class="icon-btn-glass" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+            <i data-lucide="moon"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- Services & Core Skills Section -->
+      <section id="services" class="col-span-12 lg:col-span-6 glass card p-8 flex flex-col gap-6">
+        <div class="card-header border-b border-[rgba(255,255,255,0.03)] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 class="card-title text-base font-bold flex items-center gap-2">
+            <i data-lucide="layout" class="text-violet-500 w-5 h-5"></i> Website Development Services
+          </h2>
+          <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 w-fit">Available for Hire</span>
+        </div>
+        
+        <div class="flex flex-col gap-5">
+          <!-- What I Offer -->
+          <div class="flex flex-col gap-2">
+            <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">// WHAT I DO</h3>
+            <p class="text-xs md:text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              I build custom, high-speed, and accessible websites tailored to your business needs. By hand-crafting code from the ground up, I ensure your visitors enjoy a lightning-fast experience that ranks highly on search engines.
+            </p>
+            <ul class="flex flex-col gap-2.5 text-xs md:text-sm text-slate-700 dark:text-slate-300 mt-2" aria-label="Services list">
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-500 mt-0.5 flex-shrink-0"></i>
+                <span><strong>Custom Web Dev:</strong> Landing pages and business portfolios built with clean, modern code.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-500 mt-0.5 flex-shrink-0"></i>
+                <span><strong>Tailwind Migrations:</strong> Upgrading slow templates into clean, responsive Tailwind utilities.</span>
+              </li>
+              <li class="flex items-start gap-2.5">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-violet-500 mt-0.5 flex-shrink-0"></i>
+                <span><strong>SEO & Speed Tuning:</strong> Boosting page load speed and structuring HTML for semantic SEO standards.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Technologies -->
+          <div class="flex flex-col gap-2 border-t border-[rgba(255,255,255,0.03)] pt-4">
+            <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">// MY TOOLBELT</h3>
+            <div class="grid grid-cols-2 gap-2.5 mt-1" aria-label="Technologies list">
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.02)]">
+                <i data-lucide="file-code-2" class="w-4 h-4 text-orange-500"></i>
+                <span class="text-xs font-semibold">HTML5</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.02)]">
+                <i data-lucide="paintbrush" class="w-4 h-4 text-sky-500"></i>
+                <span class="text-xs font-semibold">CSS3</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.02)]">
+                <i data-lucide="braces" class="w-4 h-4 text-yellow-500"></i>
+                <span class="text-xs font-semibold">JavaScript</span>
+              </div>
+              <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.02)]">
+                <i data-lucide="zap" class="w-4 h-4 text-indigo-500"></i>
+                <span class="text-xs font-semibold">Tailwind CSS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects Showcase Section -->
+      <section id="projects-showcase" class="col-span-12 lg:col-span-6 glass card p-8 flex flex-col gap-6">
+        <div class="card-header border-b border-[rgba(255,255,255,0.03)] pb-4">
+          <h2 class="card-title text-base font-bold flex items-center gap-2">
+            <i data-lucide="folder-git-2" class="text-violet-500 w-5 h-5"></i> Projects Showcase
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Concepts and practice layouts currently in active training.</p>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+          <!-- Item 1: Real Project -->
+          <div class="p-4 rounded-xl bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.03)] dark:border-[rgba(255,255,255,0.02)] flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase">// Completed Build: NEON_NEXUS</span>
+              <span class="text-[9px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold uppercase">Live Build</span>
+            </div>
+            
+            <!-- Screenshot Preview -->
+            <div class="w-full h-32 rounded-lg overflow-hidden border border-[rgba(0,0,0,0.05)] dark:border-[rgba(255,255,255,0.03)] relative group">
+              <img src="assets/cyberpunk.png" alt="NEON_NEXUS Cyberpunk Site Preview" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            </div>
+
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              A fully custom, hand-coded interactive experience showcasing advanced animations, real-time audio/visual effects, and responsive layouts — built entirely from scratch without templates or page builders.
+            </p>
+            
+            <div class="flex gap-2">
+              <a href="https://nexus-cyberpunk.vercel.app" target="_blank" rel="noopener noreferrer" class="flex-1 text-center py-2 px-3 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i> View Live Site
+              </a>
+              <a href="https://github.com/nilinthelegend/nexus-cyberpunk" target="_blank" rel="noopener noreferrer" class="py-2 px-3 rounded-lg bg-slate-200/55 hover:bg-slate-200 dark:bg-slate-800/55 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors flex items-center justify-center" aria-label="View Source on GitHub">
+                <i data-lucide="github" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="p-4 rounded-xl bg-slate-100/30 dark:bg-slate-900/30 border border-[rgba(0,0,0,0.03)] dark:border-[rgba(255,255,255,0.02)] flex flex-col gap-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase">// Personal Practice: Admin Panel</span>
+              <span class="text-[9px] px-2.5 py-0.5 rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20 font-semibold uppercase">Practice Build</span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Experimenting with modular layout grids, charts rendering, and dark-mode variables styling.
+            </p>
+          </div>
+
+          <!-- Case study prompt -->
+          <div class="p-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 text-center text-xs text-slate-500 dark:text-slate-400">
+            <i data-lucide="help-circle" class="w-4 h-4 inline mr-1 -mt-0.5 text-slate-400"></i>
+            Client case studies will be cataloged here once live projects launch.
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Project Scope Roadmap Widget -->
+      <section id="projects" class="col-span-12 lg:col-span-6 glass card p-8 flex flex-col gap-6">
+        <div class="card-header flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[rgba(255,255,255,0.03)] pb-3">
+          <div>
+            <h2 class="card-title text-base font-bold flex items-center gap-2">
+              <i data-lucide="check-square" class="text-violet-500 w-5 h-5"></i> Project Scope Roadmap
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Interactive demo: Add features to test scope variables. Persists in localStorage.</p>
+          </div>
+          <span id="todo-counter" class="todo-counter w-fit h-fit" aria-label="Completed scope tasks count">0 / 0</span>
+        </div>
+        
+        <form id="todo-form" class="todo-input-group mt-2">
+          <input type="text" id="todo-input" placeholder="Add custom feature (e.g. 'Contact form')..." required aria-label="Add website scope feature input">
+          <button type="submit" class="todo-add-btn" aria-label="Add Feature to Scope">
+            <i data-lucide="plus"></i>
+          </button>
+        </form>
+
+        <div class="todo-list-container">
+          <ul id="todo-list" aria-label="Project roadmap list">
+            <!-- Dynamically populated tasks -->
+          </ul>
+        </div>
+      </section>
+
+      <!-- Client Contact Intake Form Widget -->
+      <section id="contact" class="col-span-12 lg:col-span-6 glass card p-8 flex flex-col gap-5">
+        <!-- Form UI State -->
+        <div id="contact-form-container" class="flex flex-col gap-4">
+          <div class="card-header border-b border-[rgba(255,255,255,0.03)] pb-3">
+            <h2 class="card-title text-base font-bold flex items-center gap-2">
+              <i data-lucide="mail" class="text-violet-500 w-5 h-5"></i> Client Intake Form
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Submit your project scope requirements for a custom build plan.</p>
+          </div>
+
+          <form id="contact-form" class="flex flex-col gap-3.5 text-xs md:text-sm">
+            <!-- Name Input -->
+            <div class="flex flex-col gap-1.5 relative">
+              <label for="client-name" class="font-bold text-slate-500 dark:text-slate-400 uppercase">// YOUR_NAME</label>
+              <input type="text" id="client-name" name="name" placeholder="e.g. John Doe" required class="p-3 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 border border-[rgba(0,0,0,0.05)] dark:border-[rgba(255,255,255,0.03)] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+              <span id="name-validation-feedback" class="text-[10px] text-red-500 mt-0.5 hidden" role="alert">Name must be at least 2 characters.</span>
+            </div>
+
+            <!-- Email Input -->
+            <div class="flex flex-col gap-1.5 relative">
+              <label for="client-email" class="font-bold text-slate-500 dark:text-slate-400 uppercase">// EMAIL_ADDRESS</label>
+              <input type="email" id="client-email" name="email" placeholder="e.g. john@example.com" required class="p-3 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 border border-[rgba(0,0,0,0.05)] dark:border-[rgba(255,255,255,0.03)] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+              <span id="email-validation-feedback" class="text-[10px] text-red-500 mt-0.5 hidden" role="alert">Please enter a valid email address.</span>
+            </div>
+
+            <!-- Message Input -->
+            <div class="flex flex-col gap-1.5 relative">
+              <div class="flex justify-between items-center">
+                <label for="client-message" class="font-bold text-slate-500 dark:text-slate-400 uppercase">// PROJECT_DETAILS</label>
+                <span id="message-char-count" class="text-[10px] text-slate-400">0 / 500</span>
+              </div>
+              <textarea id="client-message" name="message" maxlength="500" placeholder="Briefly describe your website goals, pages needed, or budget timeline..." required class="p-3 rounded-xl bg-slate-100/50 dark:bg-slate-900/50 border border-[rgba(0,0,0,0.05)] dark:border-[rgba(255,255,255,0.03)] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all min-h-[80px] resize-none"></textarea>
+            </div>
+
+            <!-- Form Action Button -->
+            <button type="submit" id="submit-form-btn" class="btn-primary mt-2 p-3 w-full rounded-xl bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-700 hover:to-pink-700 text-white font-semibold transition-all flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i> Send Message
+            </button>
+          </form>
+        </div>
+
+        <!-- Success UI State (hidden by default) -->
+        <div id="contact-success-container" class="hidden flex flex-col items-center justify-center text-center py-8 px-4 gap-3">
+          <div class="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200">Message received!</h3>
+          <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+            I'll review your project scope and get back to you soon.
+          </p>
+          <button type="button" id="reset-form-btn" class="btn-secondary text-[11px] px-3.5 py-1.5 rounded-lg border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.05)] mt-2">Send another message</button>
+        </div>
+
+        <!-- Direct details info footer -->
+        <div class="flex flex-row flex-wrap justify-between items-center gap-2.5 text-[11px] text-slate-500 dark:text-slate-400 border-t border-[rgba(255,255,255,0.03)] pt-3">
+          <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-violet-500"></i> 9762280349</span>
+          <span class="flex items-center gap-1.5"><i data-lucide="instagram" class="w-3.5 h-3.5 text-violet-500"></i> <a href="https://www.instagram.com/n.1ln__/" target="_blank" rel="noopener noreferrer" class="hover:text-violet-500 transition-colors">@n.1ln__</a></span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer mt-auto py-6 border-t border-[rgba(255,255,255,0.03)]">
+      <p class="text-xs text-slate-400 dark:text-slate-500">&copy; 2026 Nilin Chitrakar • Premium Web Development Portfolio • Built with plain code & Tailwind CLI</p>
+    </footer>
+  </div>
+
+  <!-- Audio alerts (hidden) -->
+  <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
