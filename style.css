@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@variant dark (:not(.light-theme) &);
+@variant dark (body:not(.light-theme) &);
 
 /* ==========================================================================
    ZenFlow Stylesheet - Modern Glassmorphism & High-End Styling
