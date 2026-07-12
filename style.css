@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (:not(.light-theme) &);
+
 /* ==========================================================================
    ZenFlow Stylesheet - Modern Glassmorphism & High-End Styling
    ========================================================================== */
@@ -36,20 +38,20 @@
 
 /* Light Theme Variables */
 body.light-theme {
-  --bg-gradient: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #e2e8f0 100%);
+  --bg-gradient: radial-gradient(circle at 50% 50%, #f8fafc 0%, #cbd5e1 100%);
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-secondary: #334155;
+  --text-muted: #57687f;
   
   --primary: #6d28d9;
   --primary-hover: #5b21b6;
-  --primary-glow: rgba(109, 40, 217, 0.2);
+  --primary-glow: rgba(109, 40, 217, 0.15);
   --secondary: #db2777;
   
-  --glass-bg: rgba(255, 255, 255, 0.45);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-hover-bg: rgba(255, 255, 255, 0.65);
-  --glass-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: #cbd5e1;
+  --glass-hover-bg: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.08);
 }
 
 /* Core Settings */
@@ -898,3 +900,73 @@ body.light-theme .icon-btn-glass:hover {
     padding: 20px;
   }
 }
+
+/* ==========================================================================
+   Light Theme Components Overrides
+   ========================================================================== */
+
+/* 1. Toolbelt Badges */
+.tool-badge {
+  transition: var(--transition-fast);
+}
+body.light-theme .tool-badge {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 2. Inner Cards (Projects) */
+.project-card-inner {
+  transition: var(--transition-fast);
+}
+body.light-theme .project-card-inner {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05);
+}
+
+/* 3. Contact Form Inputs & Placeholders */
+body.light-theme #contact-form input,
+body.light-theme #contact-form textarea {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+body.light-theme #contact-form input::placeholder,
+body.light-theme #contact-form textarea::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+body.light-theme #contact-form input:focus,
+body.light-theme #contact-form textarea:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+/* 4. Roadmap Checklist Items */
+body.light-theme .todo-item {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+body.light-theme .todo-item:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+body.light-theme .todo-checkbox {
+  border-color: #475569;
+}
+body.light-theme .todo-checkbox:hover {
+  background: rgba(109, 40, 217, 0.05);
+  border-color: var(--primary);
+}
+body.light-theme .todo-item.completed {
+  opacity: 0.75;
+}
+body.light-theme .todo-item.completed .todo-text {
+  color: #57687f; /* Slate-600 contrast text */
+}
+
