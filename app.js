@@ -10,17 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Theme Toggle Setup ---
   const themeToggleBtn = document.getElementById('theme-toggle');
-  const storedTheme = localStorage.getItem('zenflow-theme') || 'dark';
-
-  if (storedTheme === 'light') {
-    document.body.classList.add('light-theme');
-    updateThemeIcon('light');
-  }
 
   themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('light-theme');
     const isLight = document.body.classList.contains('light-theme');
-    localStorage.setItem('zenflow-theme', isLight ? 'light' : 'dark');
     updateThemeIcon(isLight ? 'light' : 'dark');
   });
 
