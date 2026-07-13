@@ -970,3 +970,13 @@ body.light-theme .todo-item.completed .todo-text {
   color: #57687f; /* Slate-600 contrast text */
 }
 
+/* Custom Teleport Canvas Transition Overlay */
+#teleport-canvas {
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+}
+#teleport-canvas.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+

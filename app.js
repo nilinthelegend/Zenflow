@@ -292,13 +292,165 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Quick Notes Auto-save ---
   const notesTextarea = document.getElementById('quick-notes');
-  const storedNotes = localStorage.getItem('nilin-portfolio-project-brief');
+  if (notesTextarea) {
+    const storedNotes = localStorage.getItem('nilin-portfolio-project-brief');
 
-  if (storedNotes !== null) {
-    notesTextarea.value = storedNotes;
+    if (storedNotes !== null) {
+      notesTextarea.value = storedNotes;
+    }
+
+    notesTextarea.addEventListener('input', () => {
+      localStorage.setItem('nilin-portfolio-project-brief', notesTextarea.value);
+    });
   }
 
-  notesTextarea.addEventListener('input', () => {
-    localStorage.setItem('nilin-portfolio-project-brief', notesTextarea.value);
-  });
+  // --- Reusable Teleport Transition Component ---
+  function initTeleportTransition(selector) {
+    console.log('[Teleport Debug] initTeleportTransition called with:', selector);
+    const canvas = document.getElementById('teleport-canvas');
+    if (!canvas) {
+      console.error('[Teleport Debug] canvas not found!');
+      return;
+    }
+
+    const triggers = document.querySelectorAll(selector);
+    console.log('[Teleport Debug] found triggers count:', triggers.length);
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        console.log('[Teleport Debug] Click detected on:', trigger);
+        e.preventDefault();
+        
+        const targetUrl = trigger.getAttribute('href');
+        if (!targetUrl) return;
+
+        // Determine destination URL with teleport parameter
+        const urlObj = new URL(targetUrl, window.location.origin);
+        urlObj.searchParams.set('teleport', '1');
+        const finalUrl = urlObj.toString();
+
+        // Canvas Setup
+        canvas.classList.add('active');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId = null;
+        let safetyTimeoutId = null;
+        let isTransitioned = false;
+
+        // Navigation trigger helper
+        function completeTransition() {
+          if (isTransitioned) return;
+          isTransitioned = true;
+          
+          // Clear animation loops and safeties
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          if (safetyTimeoutId) clearTimeout(safetyTimeoutId);
+          
+          // Open target in a new tab
+          window.open(finalUrl, '_blank');
+
+          // Fade out the overlay to restore page interaction
+          canvas.classList.remove('active');
+          setTimeout(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }, 400); // match CSS transition duration
+        }
+
+        // 1. Safety Navigation Fallback (1.5 seconds)
+        safetyTimeoutId = setTimeout(() => {
+          console.warn('Teleport animation fallback triggered.');
+          completeTransition();
+        }, 1500);
+
+        // 2. Prefers-Reduced-Motion check
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+          // Simple short fade-to-black instead of particle simulation
+          ctx.fillStyle = '#080707';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          
+          // Wait briefly, open, and fade out
+          setTimeout(completeTransition, 350);
+          return;
+        }
+
+        // 3. Normal Particle Vortex Animation
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const particles = [];
+        const particleCount = 120;
+
+        // Initialize particles starting at radial bounds
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            angle: Math.random() * Math.PI * 2,
+            radius: Math.random() * Math.max(canvas.width, canvas.height) * 0.8,
+            speed: 2 + Math.random() * 3,
+            size: 1.5 + Math.random() * 2,
+            color: `rgba(${139 + Math.random() * 50}, ${92 + Math.random() * 50}, 246, ${0.4 + Math.random() * 0.6})`
+          });
+        }
+
+        let startTime = null;
+        const duration = 1000; // Animation duration (1s)
+
+        function animate(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const progress = timestamp - startTime;
+
+          // Semi-transparent overlay to draw smooth particle trail sweeps
+          ctx.fillStyle = 'rgba(8, 7, 7, 0.25)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Update and draw particles
+          particles.forEach(p => {
+            p.radius -= p.speed * (progress / 150 + 1.2);
+            p.angle += 0.05 + (p.speed * 0.005);
+            
+            const x = centerX + Math.cos(p.angle) * p.radius;
+            const y = centerY + Math.sin(p.angle) * p.radius;
+
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(x, y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Respawn particles at the outer rim if they collapse in
+            if (p.radius < 5) {
+              p.radius = Math.max(canvas.width, canvas.height) * 0.8;
+            }
+          });
+
+          if (progress < duration) {
+            animationFrameId = requestAnimationFrame(animate);
+          } else {
+            // Draw a solid black overlay cover and finalize
+            ctx.fillStyle = 'rgba(8, 7, 7, 1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            completeTransition();
+          }
+        }
+
+        // Bind resize handlers during transition to ensure fullscreen alignment
+        const resizeHandler = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', resizeHandler);
+        
+        // Remove resize listener upon transition resolution
+        const originalCompleteTransition = completeTransition;
+        completeTransition = () => {
+          window.removeEventListener('resize', resizeHandler);
+          originalCompleteTransition();
+        };
+
+        animationFrameId = requestAnimationFrame(animate);
+      });
+    });
+  }
+
+  // Bind triggers
+  initTeleportTransition('.teleport-trigger');
 });
