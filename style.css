@@ -980,3 +980,9 @@ body.light-theme .todo-item.completed .todo-text {
   pointer-events: auto;
 }
 
+/* Genesis Loading Blocker styles */
+html.genesis-loading .genesis-element {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+

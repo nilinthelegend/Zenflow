@@ -8,16 +8,160 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
   }
 
+  // --- Genesis Intro Animation Engine ---
+  const animElements = document.querySelectorAll('.genesis-element');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (animElements.length > 0) {
+    const genesisPlayed = sessionStorage.getItem('zenflow-genesis-played');
+    
+    if (genesisPlayed || prefersReducedMotion.matches) {
+      // Skip animation, clean up immediately
+      cleanUpGenesisInstant();
+    } else {
+      runGenesisAnimation();
+    }
+  }
+
+  function cleanUpGenesisInstant() {
+    document.documentElement.classList.remove('genesis-loading');
+    animElements.forEach(el => {
+      if (el) {
+        el.style.transform = "";
+        el.style.opacity = "";
+        el.style.zIndex = "";
+      }
+    });
+  }
+
+  function runGenesisAnimation() {
+    let isComplete = false;
+
+    // Safety Fallback Timeout (2.5 seconds)
+    const safetyTimeoutId = setTimeout(() => {
+      console.warn("Genesis safety fallback triggered.");
+      cleanUp();
+    }, 2500);
+
+    function cleanUp() {
+      if (isComplete) return;
+      isComplete = true;
+      clearTimeout(safetyTimeoutId);
+      
+      document.documentElement.classList.remove('genesis-loading');
+      animElements.forEach(el => {
+        if (el) {
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.zIndex = "";
+        }
+      });
+      sessionStorage.setItem('zenflow-genesis-played', 'true');
+    }
+
+    // Capture initial layouts after first paint
+    const elementsData = [];
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    animElements.forEach((el, index) => {
+      if (!el) return;
+      
+      const rect = el.getBoundingClientRect();
+      const elCenterX = rect.left + rect.width / 2;
+      const elCenterY = rect.top + rect.height / 2;
+      
+      // Translation needed to center the element
+      const dx = centerX - elCenterX;
+      const dy = centerY - elCenterY;
+      
+      // Alternate clockwise/counter-clockwise spins (720 deg = 2 full rotations)
+      const dir = index % 2 === 0 ? 1 : -1;
+      const startRotation = dir * 720;
+      
+      elementsData.push({
+        el,
+        dx,
+        dy,
+        startRotation,
+        zIndex: 100 + index
+      });
+
+      // Apply initial state (centered, 45% scale, 0.95 opacity)
+      el.style.transform = `translate(${dx}px, ${dy}px) scale(0.45) rotate(${startRotation}deg)`;
+      el.style.opacity = "0.95";
+      el.style.zIndex = (100 + index).toString();
+    });
+
+    // Strip pre-render blocker class so center-spinning elements render
+    document.documentElement.classList.remove('genesis-loading');
+
+    // Run custom requestAnimationFrame loop
+    const duration = 1800; // 1.8 seconds total (800ms Stage 1, 1000ms Stage 2)
+    let startTime = null;
+
+    function animate(timestamp) {
+      if (isComplete) return;
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+
+      if (elapsed >= duration) {
+        cleanUp();
+        return;
+      }
+
+      // Timeline Logic
+      if (elapsed < 800) {
+        // Stage 1: Spin hold at center (0ms - 800ms)
+        const p1 = elapsed / 800;
+        
+        elementsData.forEach(data => {
+          const rotation = data.startRotation * (1 - p1 * 0.5); // spin 50% of the way (1 full rotation) to dir * 360deg
+          
+          data.el.style.transform = `translate(${data.dx}px, ${data.dy}px) scale(0.45) rotate(${rotation}deg)`;
+          data.el.style.opacity = "0.95";
+        });
+      } else {
+        // Stage 2: Explode outward (800ms - 1800ms)
+        const p2 = (elapsed - 800) / 1000;
+        
+        // Easing function: Cubic Out (snappy arrival)
+        const p_ease = 1 - Math.pow(1 - p2, 3);
+        
+        elementsData.forEach(data => {
+          const currentX = data.dx * (1 - p_ease);
+          const currentY = data.dy * (1 - p_ease);
+          const scale = 0.45 + 0.55 * p_ease; // scale from 0.45 to 1.0
+          const opacity = 0.95 + 0.05 * p_ease; // opacity from 0.95 to 1.0
+          
+          // Remaining 50% of rotation wound down from dir * 360deg to 0deg
+          const midRotation = data.startRotation * 0.5;
+          const rotation = midRotation * (1 - p_ease);
+          
+          data.el.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale}) rotate(${rotation}deg)`;
+          data.el.style.opacity = opacity.toString();
+        });
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
   // --- Theme Toggle Setup ---
   const themeToggleBtn = document.getElementById('theme-toggle');
 
-  themeToggleBtn.addEventListener('click', () => {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    updateThemeIcon(isLight ? 'light' : 'dark');
-  });
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      updateThemeIcon(isLight ? 'light' : 'dark');
+    });
+  }
 
   function updateThemeIcon(theme) {
+    if (!themeToggleBtn) return;
     const icon = themeToggleBtn.querySelector('i');
     if (icon) {
       if (theme === 'light') {
@@ -41,11 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Date formatting: Wednesday, July 8
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
-    headerDate.textContent = now.toLocaleDateString('en-US', options);
+    if (headerDate) {
+      headerDate.textContent = now.toLocaleDateString('en-US', options);
+    }
 
     // Time formatting: 18:30
     const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    headerTime.textContent = timeString;
+    if (headerTime) {
+      headerTime.textContent = timeString;
+    }
 
     // Dynamic greeting based on hour
     const hours = now.getHours();
@@ -63,7 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
       subtitle = "Handcrafting clean HTML, CSS, and Tailwind layouts. Let's build something exceptional.";
     }
 
-    greetingTitle.textContent = `${greeting}, I'm Nilin Chitrakar`;
+    if (greetingTitle) {
+      greetingTitle.textContent = `${greeting}, I'm Nilin Chitrakar`;
+    }
     const subtitleEl = document.getElementById('greeting-subtitle');
     if (subtitleEl) subtitleEl.textContent = subtitle;
   }
@@ -87,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   function validateName() {
+    if (!clientName || !nameFeedback) return false;
     const val = clientName.value.trim();
     if (val.length >= 2) {
       nameFeedback.classList.add('hidden');
@@ -107,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validateEmail() {
+    if (!clientEmail || !emailFeedback) return false;
     const val = clientEmail.value.trim();
     if (emailRegex.test(val)) {
       emailFeedback.classList.add('hidden');
@@ -204,10 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateTodoCounter() {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
-    todoCounter.textContent = `${completed} / ${total}`;
+    if (todoCounter) {
+      todoCounter.textContent = `${completed} / ${total}`;
+    }
   }
 
   function renderTasks() {
+    if (!todoList) return;
     todoList.innerHTML = '';
     
     tasks.forEach(task => {
@@ -228,8 +383,10 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       // Event Listeners for Item Actions
-      li.querySelector('.todo-checkbox').addEventListener('click', () => toggleTask(task.id));
-      li.querySelector('.todo-delete-btn').addEventListener('click', () => deleteTask(task.id));
+      const checkbox = li.querySelector('.todo-checkbox');
+      const deleteBtn = li.querySelector('.todo-delete-btn');
+      if (checkbox) checkbox.addEventListener('click', () => toggleTask(task.id));
+      if (deleteBtn) deleteBtn.addEventListener('click', () => deleteTask(task.id));
       
       todoList.appendChild(li);
     });
@@ -257,22 +414,24 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTasks();
   }
 
-  todoForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = todoInput.value.trim();
-    if (!text) return;
+  if (todoForm && todoInput) {
+    todoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = todoInput.value.trim();
+      if (!text) return;
 
-    const newTask = {
-      id: Date.now(),
-      text: text,
-      completed: false
-    };
+      const newTask = {
+        id: Date.now(),
+        text: text,
+        completed: false
+      };
 
-    tasks.push(newTask);
-    saveTasks();
-    renderTasks();
-    todoInput.value = '';
-  });
+      tasks.push(newTask);
+      saveTasks();
+      renderTasks();
+      todoInput.value = '';
+    });
+  }
 
   function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, 
