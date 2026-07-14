@@ -167,7 +167,7 @@
             </p>
             
             <div class="flex gap-2">
-              <a href="https://nexus-cyberpunk.vercel.app" target="_blank" rel="noopener noreferrer" class="teleport-trigger flex-1 text-center py-2 px-3 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5">
+              <a href="https://nexus-cyberpunk.vercel.app" target="_blank" rel="noopener noreferrer" data-teleport-style="hacking" class="teleport-trigger flex-1 text-center py-2 px-3 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5">
                 <i data-lucide="external-link" class="w-3.5 h-3.5"></i> View Live Site
               </a>
               <a href="https://github.com/nilinthelegend/nexus-cyberpunk" target="_blank" rel="noopener noreferrer" class="py-2 px-3 rounded-lg bg-slate-200/55 hover:bg-slate-200 dark:bg-slate-800/55 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors flex items-center justify-center" aria-label="View Source on GitHub">
@@ -313,6 +313,66 @@
 
   <!-- Custom Teleport Canvas Overlay -->
   <canvas id="teleport-canvas" class="fixed inset-0 z-50 pointer-events-none opacity-0 bg-black" aria-hidden="true"></canvas>
+
+  <!-- Cyberpunk Hacking Terminal Overlay -->
+  <div id="teleport-terminal" class="fixed inset-0 z-[9999] bg-[#050508] hidden pointer-events-none opacity-0 transition-opacity duration-300 font-mono text-emerald-500 overflow-hidden">
+    <!-- Hacking Canvas (for matrix rain & central lock circle) -->
+    <canvas id="hacking-canvas" class="absolute inset-0 w-full h-full" aria-hidden="true"></canvas>
+    
+    <!-- Cinematic HUD overlays -->
+    <!-- Top-Left Status Panel -->
+    <div class="absolute top-6 left-6 p-4 rounded border border-emerald-500/20 bg-[#0c0c12]/80 w-64 text-[10px] text-emerald-500/60 flex flex-col gap-1 select-none">
+      <div class="text-emerald-400 font-bold border-b border-emerald-500/20 pb-1 mb-1">SYSTEM STATS</div>
+      <div>NODE: NEXUS_MAINFRAME</div>
+      <div>IP: 192.168.88.254</div>
+      <div>PING: <span id="hack-ping">24ms</span></div>
+      <div>CPU LOAD: <span id="hack-cpu">92.4%</span></div>
+      <div>MEMORY: 489.1 MB / 16.0 GB</div>
+    </div>
+
+    <!-- Bottom-Right Hex Dump scrolling log -->
+    <div class="absolute bottom-6 right-6 p-4 rounded border border-emerald-500/20 bg-[#0c0c12]/80 w-80 h-48 text-[9px] text-emerald-500/50 overflow-hidden select-none flex flex-col justify-end">
+      <div class="text-emerald-400 font-bold border-b border-emerald-500/20 pb-1 mb-1 absolute top-4 left-4 right-4 bg-[#0c0c12] z-10">PROXY TRAFFIC LOG</div>
+      <div id="hack-hex-dump" class="flex flex-col gap-0.5 mt-6 font-mono leading-none">
+        <!-- Rapidly scrolling hex data -->
+      </div>
+    </div>
+
+    <!-- Center Console Area (Padlock & Core Typing) -->
+    <div class="absolute inset-0 flex flex-col items-center justify-center gap-6 p-4 z-10 text-center">
+      <!-- Lock visual centerpiece -->
+      <div id="hack-lock-container" class="w-32 h-32 relative flex items-center justify-center transition-all duration-300 transform scale-90 opacity-0">
+        <!-- SVG Ring Segment and Padlock -->
+        <svg class="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(16, 185, 129, 0.08)" stroke-width="6" />
+          <circle id="lock-ring" cx="50" cy="50" r="44" fill="none" stroke="#10b981" stroke-width="6" stroke-dasharray="276" stroke-dashoffset="276" stroke-linecap="round" class="transition-all duration-75" />
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <svg id="svg-lock" class="w-12 h-12 text-emerald-500 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Shackle -->
+            <path id="lock-shackle" d="M7 11V7a5 5 0 0 1 10 0v4M8 11h8" class="transition-transform origin-[17px_11px] duration-500" />
+            <!-- Body -->
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="rgba(16, 185, 129, 0.1)" />
+            <path d="M12 15v3" />
+            <circle cx="12" cy="18" r="1" />
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Central Monospace Typing Window -->
+      <div class="w-[90%] max-w-lg rounded-xl border border-emerald-500/20 bg-[#0c0c12]/90 p-6 shadow-2xl shadow-emerald-500/10 backdrop-blur-sm">
+        <div class="flex items-center gap-1.5 border-b border-emerald-500/10 pb-3 mb-4 select-none">
+          <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+          <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+          <span class="text-xs text-emerald-500/40 ml-2">breach_portal.sh</span>
+        </div>
+        <div id="teleport-terminal-lines" class="flex flex-col gap-1.5 text-left min-h-[160px] text-xs md:text-sm">
+          <!-- Text logs typed out -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Application Logic -->
   <script src="app.js"></script>

@@ -986,3 +986,12 @@ html.genesis-loading .genesis-element {
   pointer-events: none !important;
 }
 
+/* Cinematic Terminal Flash Overlay styles */
+#teleport-terminal.flash-white {
+  background: #d1fae5 !important; /* Soft, highly bright emerald glow */
+  filter: brightness(2) contrast(1.8) saturate(1.5);
+}
+#teleport-terminal {
+  transition: background 0.15s ease-out, filter 0.15s ease-out, opacity 0.3s ease;
+}
+

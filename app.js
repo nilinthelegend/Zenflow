@@ -3,6 +3,8 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  let audioCtx = null;
+
   // Initialize Lucide Icons
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
@@ -472,140 +474,455 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const termContainer = document.getElementById('teleport-terminal');
+    const termLines = document.getElementById('teleport-terminal-lines');
+    const hackCanvas = document.getElementById('hacking-canvas');
+    const lockContainer = document.getElementById('hack-lock-container');
+    const lockRing = document.getElementById('lock-ring');
+    const lockShackle = document.getElementById('lock-shackle');
+    const hexDumpEl = document.getElementById('hack-hex-dump');
+    const pingEl = document.getElementById('hack-ping');
+    const cpuEl = document.getElementById('hack-cpu');
+
     const triggers = document.querySelectorAll(selector);
     console.log('[Teleport Debug] found triggers count:', triggers.length);
     triggers.forEach(trigger => {
       trigger.addEventListener('click', (e) => {
         console.log('[Teleport Debug] Click detected on:', trigger);
         e.preventDefault();
+
+        // Initialize Web Audio Context lazily on user gesture
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
         
         const targetUrl = trigger.getAttribute('href');
         if (!targetUrl) return;
+
+        const style = trigger.getAttribute('data-teleport-style') || 'vortex';
 
         // Determine destination URL with teleport parameter
         const urlObj = new URL(targetUrl, window.location.origin);
         urlObj.searchParams.set('teleport', '1');
         const finalUrl = urlObj.toString();
 
-        // Canvas Setup
-        canvas.classList.add('active');
-        const ctx = canvas.getContext('2d');
         let animationFrameId = null;
+        let hackAnimationFrameId = null;
         let safetyTimeoutId = null;
         let isTransitioned = false;
+        let isTabVisible = true;
+        const typingIntervals = [];
+
+        // Audio node tracking for cleanup
+        let droneOsc = null;
+        let droneGain = null;
+
+        // Audio keystroke/alert synthesizer helper
+        function playKeySound(freq = 800, duration = 0.03, type = 'sine') {
+          if (!audioCtx) return;
+          try {
+            if (audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+          } catch(err) {
+            console.log('Audio keypress synth failed:', err);
+          }
+        }
+
+        // Tab focus Visibility API handler
+        const handleVisibilityChange = () => {
+          isTabVisible = !document.hidden;
+          if (isTabVisible && !isTransitioned && style === 'hacking') {
+            hackMatrixLoop();
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         // Navigation trigger helper
         function completeTransition() {
           if (isTransitioned) return;
           isTransitioned = true;
           
-          // Clear animation loops and safeties
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+
+          // Clear animation loops, timeouts and typing intervals
           if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          if (hackAnimationFrameId) cancelAnimationFrame(hackAnimationFrameId);
           if (safetyTimeoutId) clearTimeout(safetyTimeoutId);
+          typingIntervals.forEach(id => {
+            clearTimeout(id);
+            clearInterval(id);
+          });
+
+          // Smoothly ramp down tension hum drone to prevent pop clicks
+          if (droneGain && audioCtx) {
+            try {
+              droneGain.gain.cancelScheduledValues(audioCtx.currentTime);
+              droneGain.gain.setValueAtTime(droneGain.gain.value, audioCtx.currentTime);
+              droneGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+            } catch(err) {
+              console.log('Drone fadeout failed:', err);
+            }
+          }
           
           // Open target in a new tab
           window.open(finalUrl, '_blank');
 
-          // Fade out the overlay to restore page interaction
-          canvas.classList.remove('active');
-          setTimeout(() => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-          }, 400); // match CSS transition duration
+          // Fade out whichever overlay is active
+          if (style === 'hacking') {
+            if (termContainer) {
+              termContainer.classList.remove('opacity-100', 'flash-white');
+              setTimeout(() => {
+                termContainer.classList.add('hidden');
+                termContainer.classList.remove('flex');
+                if (termLines) termLines.innerHTML = '';
+                if (hexDumpEl) hexDumpEl.innerHTML = '';
+                if (lockShackle) lockShackle.style.transform = "";
+                if (lockContainer) {
+                  lockContainer.classList.remove('opacity-100', 'scale-100');
+                  lockContainer.classList.add('opacity-0', 'scale-90');
+                }
+                if (lockRing) lockRing.style.strokeDashoffset = "276";
+              }, 300);
+            }
+          } else {
+            canvas.classList.remove('active');
+            const ctx = canvas.getContext('2d');
+            setTimeout(() => {
+              if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }, 400); // match CSS transition duration
+          }
         }
 
-        // 1. Safety Navigation Fallback (1.5 seconds)
+        // Set up safety timeouts and reduced motion checks (3100ms run + 800ms buffer = 3900ms)
+        const fallbackDuration = style === 'hacking' ? 3900 : 1500;
         safetyTimeoutId = setTimeout(() => {
           console.warn('Teleport animation fallback triggered.');
           completeTransition();
-        }, 1500);
+        }, fallbackDuration);
 
-        // 2. Prefers-Reduced-Motion check
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (prefersReducedMotion) {
-          // Simple short fade-to-black instead of particle simulation
-          ctx.fillStyle = '#080707';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          
-          // Wait briefly, open, and fade out
+          // Simple short fade overlay instead of loops/typewriters
+          if (style === 'hacking') {
+            if (termContainer) {
+              termLines.innerHTML = '';
+              termContainer.classList.remove('hidden');
+              termContainer.classList.add('flex', 'opacity-100');
+            }
+          } else {
+            canvas.classList.add('active');
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.fillStyle = '#080707';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+          }
           setTimeout(completeTransition, 350);
           return;
         }
 
-        // 3. Normal Particle Vortex Animation
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const particles = [];
-        const particleCount = 120;
-
-        // Initialize particles starting at radial bounds
-        for (let i = 0; i < particleCount; i++) {
-          particles.push({
-            angle: Math.random() * Math.PI * 2,
-            radius: Math.random() * Math.max(canvas.width, canvas.height) * 0.8,
-            speed: 2 + Math.random() * 3,
-            size: 1.5 + Math.random() * 2,
-            color: `rgba(${139 + Math.random() * 50}, ${92 + Math.random() * 50}, 246, ${0.4 + Math.random() * 0.6})`
-          });
-        }
-
-        let startTime = null;
-        const duration = 1000; // Animation duration (1s)
-
-        function animate(timestamp) {
-          if (!startTime) startTime = timestamp;
-          const progress = timestamp - startTime;
-
-          // Semi-transparent overlay to draw smooth particle trail sweeps
-          ctx.fillStyle = 'rgba(8, 7, 7, 0.25)';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Update and draw particles
-          particles.forEach(p => {
-            p.radius -= p.speed * (progress / 150 + 1.2);
-            p.angle += 0.05 + (p.speed * 0.005);
+        // Style selector branch
+        if (style === 'hacking') {
+          if (termContainer && termLines) {
+            termLines.innerHTML = '';
+            if (hexDumpEl) hexDumpEl.innerHTML = '';
+            if (lockShackle) lockShackle.style.transform = "";
+            if (lockRing) lockRing.style.strokeDashoffset = "276";
             
-            const x = centerX + Math.cos(p.angle) * p.radius;
-            const y = centerY + Math.sin(p.angle) * p.radius;
+            termContainer.classList.remove('hidden');
+            termContainer.offsetHeight; // Force reflow
+            termContainer.classList.add('flex', 'opacity-100');
 
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(x, y, p.size, 0, Math.PI * 2);
-            ctx.fill();
+            // 1. Initialize Tension rising sound drone (100Hz -> 320Hz sawtooth sweep)
+            if (audioCtx && audioCtx.state !== 'suspended') {
+              try {
+                droneOsc = audioCtx.createOscillator();
+                droneGain = audioCtx.createGain();
+                const droneFilter = audioCtx.createBiquadFilter();
 
-            // Respawn particles at the outer rim if they collapse in
-            if (p.radius < 5) {
-              p.radius = Math.max(canvas.width, canvas.height) * 0.8;
+                droneOsc.type = 'sawtooth';
+                droneOsc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                // click-free linear frequency ramping
+                droneOsc.frequency.linearRampToValueAtTime(320, audioCtx.currentTime + 3.0);
+
+                droneFilter.type = 'lowpass';
+                droneFilter.frequency.setValueAtTime(300, audioCtx.currentTime);
+
+                droneGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                droneGain.gain.exponentialRampToValueAtTime(0.05, audioCtx.currentTime + 0.8);
+
+                droneOsc.connect(droneFilter);
+                droneFilter.connect(droneGain);
+                droneGain.connect(audioCtx.destination);
+
+                droneOsc.start();
+                droneOsc.stop(audioCtx.currentTime + 3.3);
+              } catch(err) {
+                console.log('Drone synthesis failed:', err);
+              }
             }
-          });
 
-          if (progress < duration) {
+            // 2. Scrolling Hex Traffic Dump Generator
+            const hexChars = '0123456789ABCDEF';
+            const generateHexLine = () => {
+              let addr = '0x00' + Array.from({length: 6}, () => hexChars[Math.floor(Math.random() * 16)]).join('');
+              let bytes = Array.from({length: 16}, () => Array.from({length: 2}, () => hexChars[Math.floor(Math.random() * 16)]).join('')).join(' ');
+              const mid = Math.floor(bytes.length / 2);
+              const formattedBytes = bytes.slice(0, mid) + ' ' + bytes.slice(mid);
+              return `${addr}  ${formattedBytes}`;
+            };
+            const hexIntervalId = setInterval(() => {
+              if (hexDumpEl) {
+                const div = document.createElement('div');
+                div.textContent = generateHexLine();
+                hexDumpEl.appendChild(div);
+                while (hexDumpEl.children.length > 15) {
+                  hexDumpEl.removeChild(hexDumpEl.firstChild);
+                }
+              }
+            }, 80);
+            typingIntervals.push(hexIntervalId);
+
+            // 3. Stats fluctuation logs (Ping & CPU Load)
+            const statsIntervalId = setInterval(() => {
+              if (pingEl) pingEl.textContent = Math.floor(12 + Math.random() * 86) + 'ms';
+              if (cpuEl) cpuEl.textContent = (85.4 + Math.random() * 13.8).toFixed(1) + '%';
+            }, 150);
+            typingIntervals.push(statsIntervalId);
+
+            // 4. Background Matrix Digital Rain Animation Loop
+            if (hackCanvas) {
+              const hackCtx = hackCanvas.getContext('2d');
+              if (hackCtx) {
+                const matrixChars = '01XYZ[]+-*#ØÆ?!<>'.split('');
+                const fontSize = 10;
+                let columns = 0;
+                let drops = [];
+
+                function initHackMatrix() {
+                  hackCanvas.width = window.innerWidth;
+                  hackCanvas.height = window.innerHeight;
+                  columns = Math.floor(hackCanvas.width / fontSize);
+                  drops = [];
+                  for (let x = 0; x < columns; x++) {
+                    drops[x] = Math.random() * -100;
+                  }
+                }
+
+                function drawHackMatrix() {
+                  hackCtx.fillStyle = 'rgba(5, 5, 8, 0.12)';
+                  hackCtx.fillRect(0, 0, hackCanvas.width, hackCanvas.height);
+                  
+                  hackCtx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+                  hackCtx.font = fontSize + 'px monospace';
+                  
+                  for (let i = 0; i < drops.length; i++) {
+                    const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                    const xCoord = i * fontSize;
+                    const yCoord = drops[i] * fontSize;
+                    hackCtx.fillText(text, xCoord, yCoord);
+                    
+                    if (yCoord > hackCanvas.height && Math.random() > 0.975) {
+                      drops[i] = 0;
+                    }
+                    drops[i]++;
+                  }
+                }
+
+                window.addEventListener('resize', initHackMatrix);
+                initHackMatrix();
+
+                function hackMatrixLoop() {
+                  if (isTransitioned || !isTabVisible) return;
+                  drawHackMatrix();
+                  hackAnimationFrameId = requestAnimationFrame(hackMatrixLoop);
+                }
+
+                hackMatrixLoop();
+                
+                const originalCompleteTransition = completeTransition;
+                completeTransition = () => {
+                  window.removeEventListener('resize', initHackMatrix);
+                  originalCompleteTransition();
+                };
+              }
+            }
+
+            // 5. Typewriter breach timeline functions
+            const appendLine = (text, delay, colorClass = 'text-emerald-500') => {
+              const timeoutId = setTimeout(() => {
+                const p = document.createElement('p');
+                p.className = colorClass;
+                p.textContent = text;
+                termLines.appendChild(p);
+                // play line complete confirmation beep
+                playKeySound(1500, 0.05, 'sine');
+              }, delay);
+              typingIntervals.push(timeoutId);
+            };
+
+            const typeAccessCode = (delay) => {
+              const timeoutId = setTimeout(() => {
+                // Show padlock centerpiece
+                if (lockContainer) {
+                  lockContainer.classList.remove('opacity-0', 'scale-90');
+                  lockContainer.classList.add('opacity-100', 'scale-100');
+                }
+
+                const p = document.createElement('p');
+                p.className = 'text-emerald-500';
+                p.textContent = 'ENTER ACCESS CODE: ';
+                termLines.appendChild(p);
+
+                let asterisks = 0;
+                const maxAsterisks = 14;
+                const charInterval = setInterval(() => {
+                  if (asterisks < maxAsterisks) {
+                    p.textContent += '*';
+                    asterisks++;
+                    playKeySound(1000, 0.02, 'triangle');
+                    
+                    // Update padlock Segmented Ring progress
+                    if (lockRing) {
+                      const offset = 276 * (1 - asterisks / maxAsterisks);
+                      lockRing.style.strokeDashoffset = offset.toString();
+                    }
+                  } else {
+                    clearInterval(charInterval);
+                    
+                    // Code completed: Spring padlock open
+                    setTimeout(() => {
+                      if (lockShackle) {
+                        lockShackle.style.transform = "translate(3px, -4px) rotate(-35deg)";
+                      }
+                      // Double unlock confirmation chime
+                      playKeySound(1200, 0.12, 'sine');
+                      setTimeout(() => playKeySound(1800, 0.25, 'sine'), 80);
+                      
+                      // Full screen white glow pulse
+                      if (termContainer) {
+                        termContainer.classList.add('flash-white');
+                        setTimeout(() => {
+                          if (termContainer) termContainer.classList.remove('flash-white');
+                        }, 200);
+                      }
+                    }, 120);
+                  }
+                }, 40);
+                typingIntervals.push(charInterval);
+              }, delay);
+              typingIntervals.push(timeoutId);
+            };
+
+            // Cinematic script sequence scheduling (3.1 seconds total)
+            appendLine("INITIATING BREACH PROTOCOL...", 0);
+            appendLine("SCANNING TARGET NODE: NEXUS_MAINFRAME...", 250);
+            appendLine("BYPASSING FIREWALL LAYER 1... [OK]", 550);
+            appendLine("BYPASSING FIREWALL LAYER 2... [OK]", 800);
+            appendLine("BYPASSING FIREWALL LAYER 3... [OK]", 1050);
+            appendLine("ROUTING THROUGH PROXY CHAIN... [3/3 NODES SECURED]", 1300);
+            typeAccessCode(1600); // Types asterisks 1600ms - 2160ms, springs open lock
+            appendLine("ACCESS GRANTED.", 2300, 'text-emerald-400 font-bold');
+            appendLine("DECRYPTING NEON_NEXUS MAINFRAME...", 2550);
+            appendLine("CONNECTION ESTABLISHED.", 2800);
+
+            const completeTimeoutId = setTimeout(() => {
+              completeTransition();
+            }, 3100);
+            typingIntervals.push(completeTimeoutId);
+          } else {
+            completeTransition();
+          }
+        } else {
+          // Normal Particle Vortex Animation (Galli Cafe or default)
+          canvas.classList.add('active');
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const particles = [];
+            const particleCount = 120;
+
+            for (let i = 0; i < particleCount; i++) {
+              particles.push({
+                angle: Math.random() * Math.PI * 2,
+                radius: Math.random() * Math.max(canvas.width, canvas.height) * 0.8,
+                speed: 2 + Math.random() * 3,
+                size: 1.5 + Math.random() * 2,
+                color: `rgba(${139 + Math.random() * 50}, ${92 + Math.random() * 50}, 246, ${0.4 + Math.random() * 0.6})`
+              });
+            }
+
+            let startTime = null;
+            const duration = 1000;
+
+            function animate(timestamp) {
+              if (isTransitioned) return;
+              if (!startTime) startTime = timestamp;
+              const progress = timestamp - startTime;
+
+              ctx.fillStyle = 'rgba(8, 7, 7, 0.25)';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+              particles.forEach(p => {
+                p.radius -= p.speed * (progress / 150 + 1.2);
+                p.angle += 0.05 + (p.speed * 0.005);
+                
+                const x = centerX + Math.cos(p.angle) * p.radius;
+                const y = centerY + Math.sin(p.angle) * p.radius;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(x, y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (p.radius < 5) {
+                  p.radius = Math.max(canvas.width, canvas.height) * 0.8;
+                }
+              });
+
+              if (progress < duration) {
+                animationFrameId = requestAnimationFrame(animate);
+              } else {
+                ctx.fillStyle = 'rgba(8, 7, 7, 1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                completeTransition();
+              }
+            }
+
+            // Bind resize handlers during transition to ensure fullscreen alignment
+            const resizeHandler = () => {
+              canvas.width = window.innerWidth;
+              canvas.height = window.innerHeight;
+            };
+            window.addEventListener('resize', resizeHandler);
+            
+            const originalCompleteTransition = completeTransition;
+            completeTransition = () => {
+              window.removeEventListener('resize', resizeHandler);
+              originalCompleteTransition();
+            };
+
             animationFrameId = requestAnimationFrame(animate);
           } else {
-            // Draw a solid black overlay cover and finalize
-            ctx.fillStyle = 'rgba(8, 7, 7, 1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
             completeTransition();
           }
         }
-
-        // Bind resize handlers during transition to ensure fullscreen alignment
-        const resizeHandler = () => {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        };
-        window.addEventListener('resize', resizeHandler);
-        
-        // Remove resize listener upon transition resolution
-        const originalCompleteTransition = completeTransition;
-        completeTransition = () => {
-          window.removeEventListener('resize', resizeHandler);
-          originalCompleteTransition();
-        };
-
-        animationFrameId = requestAnimationFrame(animate);
       });
     });
   }
